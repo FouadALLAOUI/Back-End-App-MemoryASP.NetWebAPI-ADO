@@ -1,0 +1,30 @@
+pool:
+  name: Riodan
+
+jobs:
+- job: Build
+  displayName: Build
+  pool:
+    vmImage: 'ubuntu-latest'
+
+  steps:
+  - task: UseDotNet@2
+    inputs:
+      packageType: 'sdk'
+      version: '7.x.x'  # Specify the .NET SDK version you want to use
+      installationPath: $(Agent.ToolsDirectory)/dotnet
+
+  - script: |
+      echo Restore dependencies...
+      dotnet restore
+    displayName: 'Restore dependencies'
+
+  - script: |
+      echo Build the project...
+      dotnet build --configuration Release --no-restore
+    displayName: 'Build'
+
+  - script: |
+      echo Run tests...
+      dotnet test --configuration Release --no-build --verbosity normal
+    displayName: 'Test'
